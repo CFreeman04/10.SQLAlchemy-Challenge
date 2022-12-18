@@ -15,6 +15,7 @@ engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
+
 # reflect the tables
 Base.prepare(autoload_with=engine)
 
@@ -22,6 +23,7 @@ Base.prepare(autoload_with=engine)
 Measurement = Base.classes.measurement
 Station = Base.classes.station
 session = Session(engine)
+
 #################################################
 # Flask Setup
 #################################################
@@ -68,7 +70,7 @@ def stations():
     all_stations = []
     for id, name in stations:
         station_dict = {}
-        station_dict["Name"] = name
+        station_dict["Station"] = name
         all_stations.append(station_dict)
 
     return jsonify(all_stations)
@@ -86,14 +88,13 @@ def tobs():
     # LIST - active_stations[(Station, Count)]
     most_active_station = active_stations[0][0]
     temperature_data = session.query(Measurement.date, Measurement.tobs).\
-                filter(Measurement.station == most_active_station).\
-                filter(Measurement.date >= last_year).all()
+            filter(Measurement.station == most_active_station).\
+            filter(Measurement.date >= last_year).all()
 
     session.close()
 
-    #all_temps = list(np.ravel(temperature_data))
-    temp_dict = dict(temperature_data)
-    return jsonify(temp_dict)
+    t_dict = dict(temperature_data)
+    return jsonify(t_dict)
 
 @app.route("/api/v1.0/<start>")
 def start_date(start):
